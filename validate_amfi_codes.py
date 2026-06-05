@@ -2,11 +2,11 @@ import pandas as pd
 import os
 
 # Load fund master and nav history CSVs
-fund_master = pd.read_csv("data/raw/fund_master.csv")   # adjust filename as needed
-nav_history = pd.read_csv("data/raw/nav_history.csv")   # adjust filename as needed
+fund_master = pd.read_csv("data/raw/01_fund_master.csv")   # adjust filename as needed
+nav_history = pd.read_csv("data/raw/02_nav_history.csv")   # adjust filename as needed
 
-master_codes = set(fund_master["scheme_code"].unique())
-nav_codes = set(nav_history["scheme_code"].unique())
+master_codes = set(fund_master["amfi_code"].unique())
+nav_codes = set(nav_history["amfi_code"].unique())
 
 missing_in_nav = master_codes - nav_codes
 missing_in_master = nav_codes - master_codes
