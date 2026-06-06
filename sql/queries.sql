@@ -13,14 +13,24 @@ FROM fact_nav
 GROUP BY amfi_code, month
 ORDER BY amfi_code, month;
 
--- 3. SIP transaction volume YoY
-SELECT strftime('%Y', date_id) as year,
-       COUNT(*) as sip_count,
-       ROUND(SUM(amount), 2) as total_amount
-FROM fact_transactions
-WHERE transaction_type = 'SIP'
-GROUP BY year
-ORDER BY year;
+-- 3. SIP YoY Growth
+WITH yearly AS (
+    SELECT
+        strftime('%Y', date_id) AS year,
+        SUM(amount) AS sip_amount
+    FROM fact_transactions
+    WHERE transaction_type = 'SIP'
+    GROUP BY year
+)
+SELECT
+    year,
+    ROUND(sip_amount, 2) AS sip_amount,
+    ROUND(
+        (sip_amount - LAG(sip_amount) OVER (ORDER BY year)) * 100.0
+        / LAG(sip_amount) OVER (ORDER BY year),
+        2
+    ) AS yoy_growth_pct
+FROM yearly;
 
 -- 4. Transactions by state
 SELECT state,
